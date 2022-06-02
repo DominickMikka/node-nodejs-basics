@@ -9,7 +9,7 @@ export const create = async () => {
 
   try {
     await access(pathToFile);
-      console.log(new Error('FS operation failed'));
+    console.log(new Error('FS operation failed'));
   } catch(err) {
     await writeFile(pathToFile, 'I am fresh and young');
   }
