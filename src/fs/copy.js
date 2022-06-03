@@ -1,4 +1,4 @@
-import { mkdir, stat, copyFile, readdir } from 'fs/promises';
+import { mkdir, access, copyFile, readdir } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join, extname} from 'path';
 
@@ -11,10 +11,12 @@ export const copy = async () => {
 
   const checkSourceFolderExists = async () => {
     try {
-      await stat(pathToSourceFolder);
+      await access(pathToSourceFolder);
       await createFolder();
     } catch(err) {
-      console.log(new Error('FS operation failed'));
+      if (!err.code || err.code === "ENOENT") {
+        throw new Error('FS operation failed');
+      }
     }
   }
 
@@ -27,13 +29,19 @@ export const copy = async () => {
     if (pathToDest) {
       pathToDestFolder = pathToDest;
     }
-    
+
     try {
-      await stat(pathToDestFolder);
-      console.log(new Error('FS operation failed'));
+      await access(pathToDestFolder);
+      throw new Error('FS operation failed');
     } catch(err) {
+
+      if (err.code !== "ENOENT") {
+        throw err;
+      }
+
       await mkdir(pathToDestFolder, {recursive: true});
       await copyFiles(pathToSourceFolder, pathToDestFolder);
+
     }
   }
 

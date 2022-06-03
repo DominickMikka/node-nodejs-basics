@@ -6,11 +6,15 @@ export const create = async () => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const pathToFile = join(__dirname, 'files', 'fresh.txt');
-
+  
   try {
     await access(pathToFile);
-    console.log(new Error('FS operation failed'));
+    throw new Error('FS operation failed');
   } catch(err) {
+    if (err.code !== "ENOENT") {
+      throw err;
+    }
+
     await writeFile(pathToFile, 'I am fresh and young');
   }
 };
