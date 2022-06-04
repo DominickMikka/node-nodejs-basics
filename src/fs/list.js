@@ -6,6 +6,7 @@ export const list = async () => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const pathToFolder = join(__dirname, 'files');
+  let arrFiles = [];
 
   try {
     const files = await readdir(pathToFolder, {withFileTypes: true});
@@ -14,9 +15,10 @@ export const list = async () => {
       const pathToFile = join(pathToFolder, file.name);
       const stats = await stat(pathToFile);
       if (stats.isFile()) {
-        console.log(`${file.name}`);
+        arrFiles.push(file.name);
       }
     }
+    console.log(arrFiles);
   } catch(err) {
     throw new Error('FS operation failed');
   }
